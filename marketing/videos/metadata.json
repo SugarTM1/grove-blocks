@@ -1,0 +1,34 @@
+[
+  {
+    "file": "grove-blocks-landscape.mp4",
+    "width": 1920,
+    "height": 1080,
+    "duration": 11.333333,
+    "codec": "h264",
+    "audio": false,
+    "openingScore": 2715,
+    "closingScore": 3975,
+    "placements": 12,
+    "linesCleared": 6,
+    "bloomTilesCleared": 6,
+    "startingMove": 34,
+    "endingMove": 46,
+    "seed": 42
+  },
+  {
+    "file": "grove-blocks-portrait.mp4",
+    "width": 1080,
+    "height": 1920,
+    "duration": 10.933333,
+    "codec": "h264",
+    "audio": false,
+    "openingScore": 2715,
+    "closingScore": 3975,
+    "placements": 12,
+    "linesCleared": 6,
+    "bloomTilesCleared": 6,
+    "startingMove": 34,
+    "endingMove": 46,
+    "seed": 42
+  }
+]

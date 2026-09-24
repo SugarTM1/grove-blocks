@@ -1,0 +1,16 @@
+{
+  "observedAt": "2026-09-24T10:56:46Z",
+  "sourceType": "Public JSON-LD aggregateRating in the official CrazyGames HTML page",
+  "method": "HTTP GET of each listed URL; extract aggregateRating.ratingValue, bestRating, worstRating and ratingCount. Values are an observation, not traffic estimates.",
+  "caveat": "Page UI describes ratings as based on the last six months. JSON-LD does not separately describe the time window of ratingCount. Search caches and localized pages may differ.",
+  "ratings": [
+    {"title":"Block Blaster","url":"https://www.crazygames.com/game/block-puzzle-master","ratingValue":8.8,"bestRating":10,"worstRating":1,"ratingCount":56758},
+    {"title":"Cups - Water Sort Puzzle","url":"https://www.crazygames.com/game/cups---water-sort-puzzle","ratingValue":9,"bestRating":10,"worstRating":1,"ratingCount":2642},
+    {"title":"Parking Jam","url":"https://www.crazygames.com/game/parking-jam-dqq","ratingValue":8.4,"bestRating":10,"worstRating":1,"ratingCount":4874},
+    {"title":"Watermelon Fruit Merge Saga","url":"https://www.crazygames.com/game/watermelon-fruit-merge-saga","ratingValue":8.5,"bestRating":10,"worstRating":1,"ratingCount":5230},
+    {"title":"Vampire Pixel Survivors","url":"https://www.crazygames.com/game/vampire-pixel-survivors","ratingValue":9.1,"bestRating":10,"worstRating":1,"ratingCount":227},
+    {"title":"Drop & Merge the Numbers","url":"https://www.crazygames.com/game/drop-merge-the-numbers","ratingValue":8.8,"bestRating":10,"worstRating":1,"ratingCount":1049},
+    {"title":"Unpuzzle: Tap Away Puzzle Game","url":"https://www.crazygames.com/game/unpuzzle-tap-away-puzzle-game","ratingValue":9,"bestRating":10,"worstRating":1,"ratingCount":206},
+    {"title":"Mirage Survivors","url":"https://www.crazygames.com/game/mirage-survivors","ratingValue":8.6,"bestRating":10,"worstRating":1,"ratingCount":256}
+  ]
+}
