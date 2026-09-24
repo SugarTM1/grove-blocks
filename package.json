@@ -1,6 +1,6 @@
 {
   "name": "grove-blocks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "description": "A cozy botanical block puzzle with blooming gardens and a daily challenge.",
@@ -10,7 +10,8 @@
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.js",
     "test:browser": "node tests/browser.mjs",
-    "test:placement": "node tests/placement-browser.mjs"
+    "test:placement": "node tests/placement-browser.mjs",
+    "test:data": "node tests/data-browser.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2"

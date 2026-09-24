@@ -4,9 +4,17 @@ Verificat la **24 septembrie 2026**, Windows, Node.js 22.12.0, Microsoft Edge / 
 
 ## Rezultate
 
-- **19/19 teste de motor și SDK simulat:** plasare imutabilă, intersecții, serii, reproductibilitate Daily, limita de 30 de mutări, Bloom, stări imposibile și recuperarea după erori SDK. Motorul este verificat și prin 320 de jocuri cu semințe fixe.
+- **31/31 teste de motor, SDK și salvare simulate:** plasare imutabilă, intersecții, serii, reproductibilitate Daily, limita de 30 de mutări, Bloom, stări imposibile și recuperarea după erori SDK. Motorul este verificat și prin 320 de jocuri cu semințe fixe.
 - **16/16 verificări în browser**, executate atât pe surse, cât și pe buildul final servit sub `/dist/`. Nicio eroare JavaScript de pagină.
-- Build final: **7 fișiere, aproximativ 88 KB necomprimate**; fără dependențe de runtime, fonturi sau media externe în standalone.
+- Build final: **8 fișiere, aproximativ 90 KB necomprimate**; fără dependențe de runtime, fonturi sau media externe în standalone.
+
+### Actualizarea 1.0.2 — CrazyGames Data Module
+
+Cele 12 teste unitare noi acoperă așteptarea inițializării, încărcarea salvării SDK înainte de orice scriere, prioritatea cloud față de salvarea standalone, utilizarea SDK pentru oaspeți, erori de citire, modul indisponibil, date cloud corupte sau cu versiune necunoscută, erori de scriere și recuperare, eliminarea scrierilor duplicate și păstrarea funcționării standalone.
+
+**12/12 verificări Data Module în browser**, atât pe surse, cât și pe `/dist/`, cu SDK simulat: inițializare întârziată, salvare existentă în cloud, partidă reluată după refresh, oaspete, erori și protecția datelor, inclusiv la ascunderea sau închiderea paginii. Fără erori JavaScript sau cereri externe. Comandă: `npm run test:data`.
+
+Test efectuat și cu **SDK-ul v3 real în mediul său `local`**: prima linie a produs scorul 220, Data Module a stocat partida, iar reîncărcarea a restaurat scorul 220. Nicio eroare JavaScript. Acest test nu verifică sincronizarea cu un cont CrazyGames real sau între dispozitive.
 
 ### Corecția 1.0.1 — previzualizare la margini
 
@@ -37,4 +45,4 @@ Testele de browser folosesc implicit Microsoft Edge instalat. Pentru Chromium Pl
 
 ## Ce rămâne pentru lansarea pe platformă
 
-Testele SDK sunt simulate; integrarea reală și evenimentele trebuie verificate în preview-ul Developer Portal. Jocul nu a fost trimis sau acceptat pe CrazyGames. Nu s-au efectuat teste pe Safari / iOS fizic. Nu există rezultate reale de retenție, trafic sau venituri. Versiunea este pregătită pentru evaluarea Basic Launch; pentru Full Launch trebuie revizuite cerințele suplimentare din [CRAZYGAMES.md](CRAZYGAMES.md).
+Integrarea și evenimentele în iframe trebuie verificate în preview-ul Developer Portal cu opțiunea Data Module activată. Testează un oaspete, autentificarea într-un cont existent, ieșirea din cont și reluarea progresului pe un al doilea dispozitiv. SDK-ul real a fost testat doar în mediul său local; sincronizarea cloud reală nu este încă verificată. Jocul nu a fost trimis sau acceptat pe CrazyGames de către agent. Nu s-au efectuat teste pe Safari / iOS fizic. Nu există rezultate reale de retenție, trafic sau venituri. Versiunea este pregătită pentru evaluarea Basic Launch; pentru Full Launch trebuie revizuite cerințele suplimentare din [CRAZYGAMES.md](CRAZYGAMES.md).

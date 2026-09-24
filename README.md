@@ -1,6 +1,6 @@
 # Grove Blocks — Garden Puzzle
 
-Un puzzle relaxant de browser: așezi piese pe o tablă de 8×8, completezi linii, culegi flori și construiești o mică grădină. Jocul intră direct în partidă și include control cu mouse, touch și tastatură, două moduri de joc și progres salvat local.
+Un puzzle relaxant de browser: așezi piese pe o tablă de 8×8, completezi linii, culegi flori și construiești o mică grădină. Jocul include control cu mouse, touch și tastatură, două moduri de joc, salvare locală în varianta standalone și integrare cloud prin CrazyGames Data Module începând cu versiunea **1.0.2**.
 
 **Joacă online:** [Grove Blocks](https://sugartm1.github.io/grove-blocks/)
 
@@ -49,7 +49,11 @@ Jocul propriu-zis nu are dependențe de runtime instalate prin npm. Pachetul Pla
 
 O plasare fără linii curățate întrerupe seria. Bloom nu acordă puncte sau flori și nu consumă o plasare din limita Daily. Contorul se oprește la 8; florile în plus contribuie în continuare la colecție.
 
-Colecția conține **9 plante**. Paletele Meadow, Clay și Dusk se deblochează la 0, 40 și 120 de flori. Partidele Classic și Daily au salvări separate; scorul personal, colecția, paleta și sunetul sunt păstrate în browser. Progresul nu se sincronizează între dispozitive, iar ștergerea datelor browserului îl elimină. Dacă stocarea este indisponibilă, jocul continuă în sesiunea curentă.
+Colecția conține **9 plante**. Paletele Meadow, Clay și Dusk se deblochează la 0, 40 și 120 de flori. Partidele Classic și Daily au salvări separate; se păstrează și scorul personal, colecția, paleta și sunetul.
+
+Pe CrazyGames, jocul așteaptă inițializarea SDK-ului și citește progresul înainte de a începe partida. Atât jucătorii fără cont, cât și cei autentificați folosesc exclusiv **Data Module**. SDK-ul gestionează salvarea locală pentru vizitatori și sincronizarea cloud pentru conturile CrazyGames. Verificarea sincronizării reale între dispozitive în Developer Portal rămâne necesară.
+
+În varianta standalone de pe GitHub, progresul rămâne în browser, fără sincronizare între dispozitive; ștergerea datelor browserului îl elimină. Salvarea standalone și cea CrazyGames sunt separate. Fiind prima trimitere pe CrazyGames, jocul nu importă automat salvările standalone într-un cont; progresul local existent rămâne intact. Dacă inițializarea sau citirea salvării CrazyGames eșuează, jocul continuă doar în sesiunea curentă, fără a suprascrie datele cloud necitite. Erorile de salvare sunt semnalate prin **Session only**.
 
 ## Ce include
 
@@ -58,7 +62,7 @@ Colecția conține **9 plante**. Paletele Meadow, Clay și Dusk se deblochează 
 - Animații de curățare, particule și respectarea preferinței de reducere a mișcării.
 - Ilustrații SVG și elemente grafice CSS create pentru proiect; sunete procedurale prin Web Audio, cu opțiune mute.
 - Interfață în engleză, adaptată pentru desktop și mobil, fără cont obligatoriu sau reclame.
-- Adaptor opțional CrazyGames SDK v3, pentru evenimente de încărcare și gameplay.
+- Adaptor CrazyGames SDK v3 pentru evenimente de încărcare, gameplay și salvarea progresului prin Data Module; nu se încarcă în modul standalone obișnuit.
 
 ## Verificare și build
 
@@ -86,9 +90,13 @@ Copertele se regenerează cu `node scripts/create-covers.mjs`. Cu serverul local
 
 ## CrazyGames
 
-Versiunea aceasta vizează **Basic Launch**, unde SDK-ul este opțional și monetizarea este dezactivată. Adaptorul folosește SDK v3 numai pe domeniile CrazyGames detectate sau când adaugi explicit `?crazygames=true` pentru QA. Pentru un test local conectat la internet, deschide [http://localhost:4173/?crazygames=true](http://localhost:4173/?crazygames=true).
+Versiunea aceasta vizează **Basic Launch**, unde SDK-ul este opțional și monetizarea este dezactivată. Adaptorul folosește SDK v3 numai pe domeniile CrazyGames detectate sau când adaugi explicit `?crazygames=true`. Pentru un test local conectat la internet, deschide [http://localhost:4173/?crazygames=true](http://localhost:4173/?crazygames=true).
 
-Buildul nu include reclame, plăți, conturi, clasamente online sau salvări cloud. Nu reprezintă o implementare Full Launch completă și nici o acceptare pe platformă. Cerințele de copertă, video, preview și integrarea care mai trebuie evaluată sunt în [ghidul de trimitere](docs/CRAZYGAMES.md).
+Pentru trimiterea ca iframe, folosește **[https://sugartm1.github.io/grove-blocks/?crazygames=true](https://sugartm1.github.io/grove-blocks/?crazygames=true)**. La întrebarea **Does your game save progress?**, selectează exact **Yes, using the Data Module from the CrazyGames SDK**; altfel platforma dezactivează modulul. Automatic Progress Save pentru LocalStorage nu funcționează pentru jocurile iframe. [Documentația Data Module](https://docs.crazygames.com/sdk/data/).
+
+CrazyGames reîncarcă automat jocurile care folosesc Data Module la autentificare și reîncarcă pagina la deconectare; progresul contului sau al vizitatorului este apoi citit la pornire. [Comportamentul oficial la autentificare](https://docs.crazygames.com/sdk/user/#auth-listener).
+
+Buildul nu include reclame, plăți, conturi proprii sau clasamente online. Salvarea cloud este integrată prin contul CrazyGames, dar trebuie verificată în **Developer Portal Preview**, inclusiv autentificarea, deconectarea și restaurarea pe un al doilea dispozitiv. Nu reprezintă o implementare Full Launch completă și nici o acceptare pe platformă. Cerințele de copertă, video, preview și integrarea care mai trebuie evaluată sunt în [ghidul de trimitere](docs/CRAZYGAMES.md).
 
 ## Drepturi
 

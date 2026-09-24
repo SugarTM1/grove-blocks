@@ -121,3 +121,8 @@ export function setPlaying(playing) {
 export function celebrate() {
   callGame("happytime");
 }
+
+/** Only available after initPlatform has completed successfully. */
+export function getDataStorage() {
+  return sdk?.data ?? null;
+}

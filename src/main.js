@@ -8,10 +8,12 @@ import {
   getHint,
   validateState,
 } from "./engine.js";
-import { initPlatform, setPlaying, celebrate } from "./platform.js";
+import { setPlaying, celebrate } from "./platform.js";
+import { initProgress } from "./progress.js";
 import { icon, plants, plantArt, gardenArt } from "./art.js";
 
-const KEY = "grove-blocks-v1";
+// SDK initialization preloads account data. Do not create/save a game before it.
+const progress = await initProgress();
 const today = () => new Date().toISOString().slice(0, 10);
 const num = (n) => Math.round(n).toLocaleString("en-US");
 const defaults = {
@@ -22,10 +24,7 @@ const defaults = {
   tutorialSeen: false,
   dailyBest: { date: today(), score: 0 },
 };
-let saved = {};
-try {
-  saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
-} catch {}
+const saved = progress.saved;
 let meta = { ...defaults };
 if (saved.version === 1 && saved.meta) {
   for (const k of ["best", "flowers"])
@@ -112,11 +111,10 @@ function pieceMarkup(piece, mini = false) {
 }
 function save() {
   sessions[mode] = { state, undos: sessions[mode].undos };
-  try {
-    localStorage.setItem(KEY, JSON.stringify({ version: 1, meta, sessions }));
-  } catch {
-    $(".saved-label").innerHTML = "Session only";
-  }
+  const saved = progress.save({ version: 1, meta, sessions });
+  $(".saved-label").innerHTML = saved
+    ? `${icon("check")} Progress saved`
+    : "Session only";
 }
 function fitTray() {
   for (const slot of tray.children) {
@@ -767,15 +765,15 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     cancelDrag();
-    save();
+    if (progress.kind !== "crazygames") save();
     audioCtx?.suspend().catch(() => {});
   } else if (meta.sound && audioCtx?.state === "suspended")
     audioCtx.resume().catch(() => {});
 });
-window.addEventListener("pagehide", save);
+window.addEventListener("pagehide", () => {
+  if (progress.kind !== "crazygames") save();
+});
 render();
 save();
-initPlatform()
-  .then(() => setPlaying(!modalOpen && !state.over))
-  .catch(() => {});
+setPlaying(!modalOpen && !state.over);
 if (state.over) overTimer = setTimeout(showGameOver, 300);
