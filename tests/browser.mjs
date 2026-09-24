@@ -83,10 +83,13 @@ try {
     assert.equal(await page.locator("#score").innerText(), "220");
   });
   await test("Invalid placement does not mutate state", async () => {
-    const before = (await snapshot()).sessions.classic.state;
     await choose(1);
-    await cell(7, 7);
+    await cell(0, 0);
+    const before = (await snapshot()).sessions.classic.state;
+    await choose(2);
+    await cell(0, 0);
     assert.deepEqual((await snapshot()).sessions.classic.state, before);
+    await page.locator("#undo").click();
   });
   await test("Keyboard placement and free hint", async () => {
     await page.keyboard.press("2");

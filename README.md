@@ -29,7 +29,7 @@ Jocul propriu-zis nu are dependențe de runtime instalate prin npm. Pachetul Pla
 
 ## Cum se joacă
 
-- **Mouse / touch:** trage o piesă pe tablă sau selecteaz-o și apoi apasă pătratul unde vrei colțul ei din stânga sus. Piesele nu se rotesc.
+- **Mouse / touch:** trage o piesă pe tablă sau selecteaz-o și apoi apasă zona dorită. Lângă margini și colțuri, piesa se aliniază automat în interiorul tablei; previzualizarea arată forma întreagă. Piesele nu se rotesc.
 - **Tastatură:** `1`, `2`, `3` aleg piesa; săgețile mută previzualizarea; `Enter` sau `Space` plasează. `H` oferă un indiciu, `U` anulează ultima acțiune, `B` activează Bloom.
 - **Linii:** un rând sau o coloană completă dispare. Intersecțiile sunt curățate o singură dată.
 - **Flori:** curățarea unei linii cu flori dezvoltă colecția și umple contorul Bloom. La 8 flori, Bloom poate elibera o zonă de până la 3×3 pătrate, centrată pe pătratul ales.

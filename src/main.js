@@ -221,15 +221,17 @@ function updateInstruction(text) {
     (bloomMode
       ? "Choose a patch to bloom. Clears 3 × 3 tiles."
       : selected >= 0
-        ? "Tap the square for the top-left of your piece."
+        ? "Tap to place. The whole piece snaps inside the edges."
         : !meta.tutorialSeen && mode === "classic"
           ? "Try the 3-block piece in the gap on the bottom row."
           : "Drag a piece onto the board, or tap a piece then a square.");
 }
 function renderPreview() {
+  board.classList.toggle("previewing", selected >= 0 || bloomMode);
   cells.forEach((c) =>
     c.classList.remove("ghost", "invalid", "will-clear", "bloom-preview"),
   );
+  preview = placementPosition(preview);
   if (!preview) return;
   if (bloomMode) {
     for (let y = preview.y - 1; y <= preview.y + 1; y++)
@@ -265,6 +267,9 @@ function selectPiece(i) {
 }
 function place(x, y) {
   if (locked || state.over) return;
+  const target = placementPosition({ x, y });
+  if (!target) return;
+  ({ x, y } = target);
   const previous = structuredClone(state),
     previousFlowers = meta.flowers;
   const result = bloomMode
@@ -416,7 +421,7 @@ function showGarden() {
 }
 function showHelp() {
   openModal(
-    `${modalHeader("A MOMENT TO FIND YOUR FLOW", "Place. Clear. Bloom.")}<div class="help-steps"><div><b>01</b><p><strong>Make yourself some space.</strong>Drag a piece onto the 8 × 8 board. Or tap a piece, then tap where its top-left corner should go. Pieces cannot rotate.</p></div><div><b>02</b><p><strong>A full line is a fresh start.</strong>Fill a row or column to clear it. Clear several lines together, or on consecutive moves, for bonus points.</p></div><div><b>03</b><p><strong>Let your garden grow.</strong>Clear tiles with a flower to collect them. Every 8 flowers charges Bloom: choose a 3 × 3 patch to clear. Bloom earns no points.</p></div></div><p class="help-detail"><b>Classic:</b> keep growing until no piece fits and no Bloom is ready. Three undos per game; hints are always free.<br><b>Daily:</b> the same seeded puzzle for everyone, 30 placements. Replays are welcome. A new garden arrives at midnight UTC.</p><p class="keyboard-help">Keyboard: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> select · arrows aim · <kbd>Enter</kbd> place · <kbd>B</kbd> bloom · <kbd>H</kbd> hint · <kbd>U</kbd> undo</p><button class="primary-button" data-action="close">Let’s grow ${icon("arrow")}</button>`,
+    `${modalHeader("A MOMENT TO FIND YOUR FLOW", "Place. Clear. Bloom.")}<div class="help-steps"><div><b>01</b><p><strong>Make yourself some space.</strong>Drag a piece onto the 8 × 8 board. Or tap a piece, then tap the area where you want it. Near an edge, the whole piece snaps inside the board. Pieces cannot rotate.</p></div><div><b>02</b><p><strong>A full line is a fresh start.</strong>Fill a row or column to clear it. Clear several lines together, or on consecutive moves, for bonus points.</p></div><div><b>03</b><p><strong>Let your garden grow.</strong>Clear tiles with a flower to collect them. Every 8 flowers charges Bloom: choose a 3 × 3 patch to clear. Bloom earns no points.</p></div></div><p class="help-detail"><b>Classic:</b> keep growing until no piece fits and no Bloom is ready. Three undos per game; hints are always free.<br><b>Daily:</b> the same seeded puzzle for everyone, 30 placements. Replays are welcome. A new garden arrives at midnight UTC.</p><p class="keyboard-help">Keyboard: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> select · arrows aim · <kbd>Enter</kbd> place · <kbd>B</kbd> bloom · <kbd>H</kbd> hint · <kbd>U</kbd> undo</p><button class="primary-button" data-action="close">Let’s grow ${icon("arrow")}</button>`,
   );
 }
 function showGameOver() {
@@ -523,20 +528,49 @@ function cancelDrag() {
   $("#drag-ghost").style.display = "none";
   board.classList.remove("dragging");
 }
+// All input methods share the same whole-piece footprint. Near an edge, shift
+// the origin just enough to keep every tile inside, without searching for gaps.
+function placementPosition(position) {
+  if (!position) return null;
+  const piece = state.tray[selected];
+  if (!bloomMode && !piece) return null;
+  const maxX = bloomMode ? 0 : Math.max(...piece.cells.map(([x]) => x));
+  const maxY = bloomMode ? 0 : Math.max(...piece.cells.map(([, y]) => y));
+  return {
+    x: Math.max(0, Math.min(SIZE - 1 - maxX, position.x)),
+    y: Math.max(0, Math.min(SIZE - 1 - maxY, position.y)),
+  };
+}
 function pointerPosition(e, centered = false) {
-  const r = board.getBoundingClientRect(),
-    cs = getComputedStyle(board),
-    pad = parseFloat(cs.paddingLeft),
-    gap = parseFloat(cs.gap),
-    size = (r.width - pad * 2 - gap * 7) / 8;
-  let x = Math.floor((e.clientX - r.left - pad) / (size + gap)),
-    y = Math.floor((e.clientY - r.top - pad) / (size + gap));
+  const r = board.getBoundingClientRect();
+  if (
+    e.clientX < r.left ||
+    e.clientX >= r.right ||
+    e.clientY < r.top ||
+    e.clientY >= r.bottom
+  )
+    return null;
+  // Cell rectangles include the actual border, padding and responsive grid gap.
+  const first = cells[0].getBoundingClientRect();
+  const stepX = cells[1].getBoundingClientRect().left - first.left;
+  const stepY = cells[SIZE].getBoundingClientRect().top - first.top;
+  let x = Math.floor((e.clientX - first.left) / stepX),
+    y = Math.floor((e.clientY - first.top) / stepY);
   if (centered && state.tray[selected]) {
     const p = state.tray[selected];
     x -= Math.floor(Math.max(...p.cells.map((c) => c[0])) / 2);
     y -= Math.floor(Math.max(...p.cells.map((c) => c[1])) / 2);
   }
-  return { x, y };
+  return placementPosition({ x, y });
+}
+function dragPosition(e) {
+  return pointerPosition(
+    {
+      clientX: e.clientX,
+      clientY: e.clientY + (e.pointerType === "touch" ? -38 : 0),
+    },
+    true,
+  );
 }
 tray.addEventListener("pointerdown", (e) => {
   const slot = e.target.closest("[data-piece]");
@@ -568,20 +602,15 @@ window.addEventListener(
       e.preventDefault();
       const ghost = $("#drag-ghost");
       ghost.innerHTML = pieceMarkup(state.tray[drag.index]);
-      ghost.style.display = "grid";
       const r = cells[0].getBoundingClientRect();
       ghost.style.setProperty("--tile", `${r.width}px`);
       ghost.style.left = e.clientX + "px";
       ghost.style.top =
         e.clientY + (e.pointerType === "touch" ? -38 : 0) + "px";
-      preview = pointerPosition(
-        {
-          ...e,
-          clientX: e.clientX,
-          clientY: e.clientY + (e.pointerType === "touch" ? -38 : 0),
-        },
-        true,
-      );
+      preview = dragPosition(e);
+      // On the board, show one complete destination instead of a floating
+      // piece that can disagree with the snapped footprint beneath it.
+      ghost.style.display = preview ? "none" : "grid";
       renderPreview();
       board.classList.add("dragging");
     } else if ((selected >= 0 || bloomMode) && e.target.closest?.("#board")) {
@@ -594,10 +623,12 @@ window.addEventListener(
 window.addEventListener("pointerup", (e) => {
   if (!drag || e.pointerId !== drag.id) return;
   const moved = drag.moved,
-    pos = preview;
+    pos = moved ? dragPosition(e) : null;
   cancelDrag();
   if (moved && pos) {
     place(pos.x, pos.y);
+  }
+  if (moved) {
     preview = null;
     renderPreview();
   }
@@ -728,6 +759,7 @@ document.addEventListener("keydown", (e) => {
         preview.y + (e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0),
       ),
     );
+    preview = placementPosition(preview);
     renderPreview();
     announce(`Row ${preview.y + 1}, column ${preview.x + 1}`);
   }
